@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
 
 export const decode = (base64: string) => {
@@ -71,7 +72,23 @@ export const getSystemInstruction = () => {
     AI PERSONALITY GUIDELINE: ${personalityInstruction}
     EXPLANATION DEPTH: ${depth}
     PREFERRED UNITS: ${units}
-    REQUIRED RESPONSE STRUCTURE: TECHNICAL ID, CODE REFERENCE, CRITICAL ANALYSIS, SAFETY NOTE.
+
+    CRITICAL CAPABILITY: Deep visual analysis of construction sites and structural elements.
+    When analyzing images or video frames:
+    1. IDENTIFY COMPONENTS: List structural elements (beams, columns, slabs, footings, etc.) and likely material grades.
+    2. DETECT FLAWS/DEFECTS: Actively look for cracks (flexural, shear, shrinkage), spalling, honeycombing, rebar exposure, corrosion, dampness, efflorescence, structural misalignments, or workmanship quality issues.
+    3. DEFECT ANALYSIS (FOR EACH IDENTIFIED ISSUE):
+       - SEVERITY RATING: Categorize as Minor (aesthetic/slight), Moderate (needs monitoring), Major (structural concern), or Critical (immediate failure risk/safety hazard).
+       - ROOT CAUSE: Analyze likely technical causes (e.g., insufficient cover, poor compaction, improper water-cement ratio, overloading).
+       - IMPACT ASSESSMENT: Evaluate long-term impact on structural integrity and durability.
+       - REMEDIAL MEASURES: Provide specific technical remedies or maintenance actions based on international and local standards (like IS, ACI, Eurocodes).
+
+    REQUIRED RESPONSE STRUCTURE: 
+    - TECHNICAL ID: What is seen.
+    - DEFECT ANALYSIS: Severity, Cause, Impact.
+    - REMEDIAL PLAN: Specific steps to fix.
+    - CODE REFERENCE: Relevant standard clauses.
+    - SAFETY NOTE: Critical warnings if any.
   `;
 };
 
@@ -170,7 +187,14 @@ export async function getTeacherAIResponse(query: string, history: { role: 'user
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
-    contents: [...history.map(h => ({ role: h.role, parts: [{ text: h.parts[0] }] })), { role: 'user', parts: [{ text: query }] }],
+    // Fix: Corrected history mapping to convert string array parts into objects with 'text' property.
+    contents: [
+      ...history.map(h => ({ 
+        role: h.role, 
+        parts: h.parts.map(text => ({ text })) 
+      })), 
+      { role: 'user', parts: [{ text: query }] }
+    ],
     config: {
       systemInstruction: `You are "Teacher AI", a brief and helpful civil engineering tutor. 
       LANGUAGE: You MUST respond EXCLUSIVELY in ${language}. No mixed languages.
