@@ -1,0 +1,8 @@
+{
+  "name": "CivilVision AI",
+  "description": "A conversational AI assistant for civil engineering that identifies structural elements via camera and provides real-time expert explanations through voice interaction.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
