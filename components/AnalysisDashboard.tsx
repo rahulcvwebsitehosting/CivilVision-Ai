@@ -128,7 +128,7 @@ const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ onBack, initialIm
           }
         },
         onMessage: async (msg: LiveServerMessage) => {
-          const audioBase64 = msg.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
+          const audioBase64 = msg.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
           if (audioBase64 && audioContextRef.current) {
             setIsSpeaking(true);
             

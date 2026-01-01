@@ -187,7 +187,6 @@ export async function getTeacherAIResponse(query: string, history: { role: 'user
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
-    // Fix: Corrected history mapping to convert string array parts into objects with 'text' property.
     contents: [
       ...history.map(h => ({ 
         role: h.role, 
